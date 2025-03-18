@@ -1,47 +1,55 @@
 // @ts-nocheck
-const { test, expect } = require("@playwright/test");
+import { test, expect } from '@playwright/test';
+import { SocialConnectPage } from '../pages/SocialConnectPage'
+import { YoutubeLoginPage } from '../pages/YoutubeLoginPage';
+import dotenv from 'dotenv';
+import path from 'path';
+import fs from 'fs';
 
-test.describe("spikerz assessment", () => {
+// Load environment variables
+dotenv.config();
+// Load local environment variables with higher priority
+if (fs.existsSync(path.join(process.cwd(), '.env.local'))) {
+  dotenv.config({ path: path.join(process.cwd(), '.env.local'), override: true });
+}
 
-    const username = "me"
-    const password = "SmipMe123456"
+test.describe('Spikerz Assessment', () => {
+  // Get credentials from environment variables
+  const username = process.env.SITE_USERNAME;
+  const password = process.env.SITE_PASSWORD;
+  const googleEmail = process.env.GOOGLE_EMAIL;
+  const googlePassword = process.env.GOOGLE_PASSWORD;
+  const baseUrl = process.env.BASE_URL || 'https://demo.spikerz.com';
 
-    //the url is set as a variable
-    const first_url = "https://demo.spikerz.com/"
-    const second_url = "https://demo.spikerz.com/social-connect/"
+  test.beforeEach(async ({ page }) => {
+    await page.goto(`https://${username}:${password}@${baseUrl.replace('https://', '')}/social-connect`);
+  });
 
-    test.beforeEach(async ({ page }) => {
-        await page.goto('https://me:SmipMe123456@demo.spikerz.com/social-connect');
-    });
+  test('Interact with the new window', async ({ page }) => {
+    // Initialize page objects
+    const socialConnectPage = new SocialConnectPage(page);
     
+    // Navigate to social connect page
+    await socialConnectPage.goTo({ username, password });
+    
+    await socialConnectPage.clickYoutubeIcon();
+    
+    const [popup] = await socialConnectPage.clickLoginButton();
+    await popup.waitForLoadState();
+    
+    const youtubeLoginPage = new YoutubeLoginPage(popup);
+    await youtubeLoginPage.fillEmail(googleEmail);
+    
+    await youtubeLoginPage.fillPassword(googlePassword);
 
+    await youtubeLoginPage.clickContinueButton();
 
-    // test("visit demo.spikerz and authenticate", async ({ page }) => {
+    await youtubeLoginPage.clickContinueButton();
+    
+    
+    const isVisible = await socialConnectPage.verifyBakeryShopVisible();
+    expect(isVisible).toBeTruthy();
+    await expect(page).toHaveURL(/social-connect/);
 
-    //     await page.goto(first_url, {
-    //         httpCredentials: {
-    //             username: username,
-    //             password: password
-    //         }
-    //     });
-
-    // })
-
-    test("interact with the new window", async ({ page }) => {
-
-        await page.goto(second_url, {
-            httpCredentials: {
-                username: username,
-                password: password
-            }
-        });
-
-
-        await page.locator(".ant-card-body .platform-icon.platform-youtube").waitFor();
-        await page.locator(".ant-card-body .platform-icon.platform-youtube").click();
-
-        await page.locator("app-google-and-youtube-login button.ant-btn").click();
-
-    })
-
-})
+  });
+});
