@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { test, expect } from '@playwright/test';
 import { SocialConnectPage } from '../pages/SocialConnectPage'
 import { YoutubeLoginPage } from '../pages/YoutubeLoginPage';
@@ -44,7 +43,10 @@ test.describe('Spikerz Assessment', () => {
 
     await youtubeLoginPage.clickContinueButton();
 
-    await youtubeLoginPage.clickContinueButton();
+    // Add the new permissions handling step
+    await youtubeLoginPage.handlePermissions();
+
+    //await youtubeLoginPage.clickContinueButton();
     
     
     const isVisible = await socialConnectPage.verifyBakeryShopVisible();

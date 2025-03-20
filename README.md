@@ -116,3 +116,9 @@ npx playwright show-report
    - The test includes basic reCAPTCHA handling, but Google may employ different detection methods
    - Try running in headed mode to manually handle reCAPTCHA during development
 
+Debugging Tips
+
+Use --debug flag to run tests in debug mode
+Add await page.pause() at specific points in your test for interactive debugging
+Increase timeouts for flaky operations:
+await page.locator('selector').click({ timeout: 30000 });

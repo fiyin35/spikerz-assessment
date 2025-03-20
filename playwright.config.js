@@ -1,4 +1,3 @@
-// @ts-check
 import { defineConfig, devices } from '@playwright/test';
 
 import dotenv from 'dotenv';
@@ -39,7 +38,7 @@ export default defineConfig({
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "on-first-retry",
 
-
+    retries: 2, // Retries twice if a test fails
     headless: false,
     launchOptions: {
       args: [

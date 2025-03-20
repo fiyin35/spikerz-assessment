@@ -1,5 +1,6 @@
 // pages/SocialConnectPage.js
 export class SocialConnectPage {
+  
     constructor(page) {
       this.page = page;
       this.youtubeIcon = page.locator('.ant-card-body .platform-icon.platform-youtube');
@@ -7,8 +8,6 @@ export class SocialConnectPage {
       this.bakeryShopElement = page.getByText('@dina_bakery_shop');
       this.baseUrl = process.env.BASE_URL || 'https://demo.spikerz.com';
     }
-
-   
   
     async goTo(credentials) {
       await this.page.goto(`${this.baseUrl}/social-connect/`, {
@@ -28,7 +27,6 @@ export class SocialConnectPage {
         ]);
       }
 
-    
       async verifyBakeryShopVisible() {
         await this.bakeryShopElement.waitFor();
         return this.bakeryShopElement.isVisible();
